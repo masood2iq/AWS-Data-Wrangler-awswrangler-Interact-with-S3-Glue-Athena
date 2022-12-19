@@ -9,6 +9,9 @@ AWS Data Wrangler is an AWS Professional Service open-source python initiative t
 ## How to Get Data From S3 as Pandas Data Frames
 First, we assume that you have already set the AWS credentials in your local machine. Let’s see how we can get data from the S3 to Python as Pandas Data Frames. I have an S3 bucket that contains the `customers.csv` data in `input` folder.
 
+![](./images/image9.png)
+
+
 By running the following command, I will be able to get the data as a pandas data frame:
 
 ``` py
@@ -17,11 +20,11 @@ df = wr.s3.read_csv(path="s3://data-3652-us-east1/data/customers.csv")
 df
 ```
 
+![](./images/image14.png)
 
 
 ## How to Write Data to S3
 As, I have an S3 bucket called `data-3652-us-east1`, where I will store some data there
-
 
 ``` py
 import awswrangler as wr
@@ -35,9 +38,12 @@ wr.s3.to_csv(df1, path1, index=False)
 wr.s3.to_csv(df2, path2, index=False)
 ```
 
+![](./images/image3.png)
+
 
 As we can see, both files `file1.csv` and `file2.csv` have been written to S3.
 
+![](./images/image15.png)
 
 
 In order to make sure that we have uploaded the data correctly, let’s download them from S3 as
@@ -46,6 +52,7 @@ In order to make sure that we have uploaded the data correctly, let’s download
 wr.s3.read_csv([path1])
 ```
 
+![](./images/image6.png)
 
 
 We can read multiple CSV files as follows:
@@ -54,6 +61,7 @@ We can read multiple CSV files as follows:
 wr.s3.read_csv([path1, path2])
 ```
 
+![](./images/image17.png)
 
 
 You can either read the data by prefix.
@@ -62,6 +70,7 @@ You can either read the data by prefix.
 wr.s3.read_csv(f"s3://{bucket}/input/")
 ```
 
+![](./images/image8.png)
 
 
 ## How to Create AWS Glue Catalog database
@@ -71,10 +80,12 @@ The data catalog features of [AWS Glue](https://github.com/masood2iq/AWS-Athena-
 wr.catalog.create_database(name='wrangler_db', exist_ok=True)
 ```
 
+![](./images/image7.png)
 
 
 If I go to the `AWS Glue console`, under the `Data Catalog` and in `Databases`, I will see the `wrangler_db`.
 
+![](./images/image13.png)
 
 
 I could get all the databases programmatically using wrangler as follows:
@@ -85,6 +96,7 @@ for db in dbs:
     print("Database name: " + db['Name'])
 ```
 
+![](./images/image10.png)
 
 
 ## How to Register Data with AWS Glue Catalog
@@ -94,10 +106,12 @@ Let’s see how we can register the data.
 wr.catalog.create_csv_table(database='wrangler_db', path='s3://{}/input/'.format(bucket), table="wrangler_db_table", columns_types={'id': 'int', 'name': 'string'}, mode='overwrite', skip_header_line_count=1, sep=',')
 ```
 
+![](./images/image2.png)
 
 
 If you go to AWS Glue, under the `wrangler_db` database there is the `wrangler_db_table` table.
 
+![](./images/image4.png)
 
 
 ## How to Review that Table Shape
@@ -108,6 +122,7 @@ table = wr.catalog.table(database='wrangler_db', table='wrangler_db_table')
 table
 ```
 
+![](./images/image12.png)
 
 
 ## Run Query in AWS Athena
@@ -117,6 +132,7 @@ We will see how we can query the data in Athena from our database. Note, that in
 wr.athena.create_athena_bucket()
 ```
 
+![](./images/image16.png)
 
 
 Now, we are ready to query our database. The query will be the `select * from wrangler_db_table` and print the results as
@@ -126,13 +142,15 @@ my_query_results = wr.athena.read_sql_query(sql="""select * from wrangler_db_tab
 print(my_query_results)
 ```
 
+![](./images/image1.png)
 
 
+![](./images/image5.png)
 
 
 As we can see, the query returned the expected results. Note that our bucket contains two csv files, however, the catalog was able to merge both of them without adding an extra row for the column name of the second file. Also you can see that it’s created the Athena query output results in output bucket.
 
+![](./images/image18.png)
 
 
-
-
+![](./images/image11.png)
